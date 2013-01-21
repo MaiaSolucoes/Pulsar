@@ -14,7 +14,7 @@ return array(
 	|
 	*/
 
-	'profile' => false,
+	'profile' => true,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -69,10 +69,10 @@ return array(
 
 		'mysql' => array(
 			'driver'   => 'mysql',
-			'host'     => '127.0.0.1',
-			'database' => 'database',
-			'username' => 'root',
-			'password' => '',
+			'host'     => 'quasar.maiasolucoes.com.br',
+			'database' => 'testapp',
+			'username' => 'pulsar',
+			'password' => 'maias0lucoes',
 			'charset'  => 'utf8',
 			'prefix'   => '',
 		),
