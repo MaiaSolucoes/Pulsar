@@ -37,7 +37,7 @@ class User extends Eloquent {
 		$this->password = Hash::make($inputs['password']);
 
 		$ignore = $this->id > 0 ? array('email') : null;
-		return Constraint::get_issues($this, $ignore);
+		return Constraint::get_issues($this->table(), $ignore);
 	}
 
 }
