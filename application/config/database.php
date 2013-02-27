@@ -69,7 +69,7 @@ return array(
 
 		'mysql' => array(
 			'driver'   => 'mysql',
-			'host'     => 'quasar.maiasolucoes.com.br',
+			'host'     => 'localhost',
 			'database' => 'testapp',
 			'username' => 'pulsar',
 			'password' => 'maias0lucoes',
