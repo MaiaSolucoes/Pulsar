@@ -13,9 +13,13 @@ class Constraint extends Eloquent {
 		);
 	}
 
-	public static function get_issues($model, $ignore = array()) {
-		$rules = self::get_constraint($model->table())
-			? self::get_constraint($model->table())
+	public static function get_issues($model_name, $ignore = array()) {
+		$model = ucfirst($model_name);
+
+		require_once $model.'.php';
+
+		$rules = self::get_constraint($model_name)
+			? self::get_constraint($model_name)
 			: $model::get_default_rules();
 
 		foreach($ignore as $id) {
