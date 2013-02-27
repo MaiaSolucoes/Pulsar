@@ -8,7 +8,7 @@ class Auth_Controller extends Base_Controller {
 		return View::make('home.index');
 	}
 
-	public function post_login() {
+	public function get_login() {
 		$credentials = array(
 			'username' => Input::get('username'),
 			'password' => Input::get('password'),
