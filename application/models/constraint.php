@@ -6,10 +6,12 @@ class Constraint extends Eloquent {
 	//public static $key = 'group';
 
 	public static function get_constraint($group) {
-		return 	Cache::remember (
-			$group,
-			function() use($group) { return Constraint::find($group); },
-			self::$cache_timeout
+		return json_decode(
+			Cache::remember(
+				$group,
+				function() use($group) { return Constraint::find($group); },
+				self::$cache_timeout
+			)
 		);
 	}
 
