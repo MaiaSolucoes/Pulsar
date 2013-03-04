@@ -30,7 +30,7 @@ class User_Controller extends Base_Controller {
 
 			$status = $status ? 200 : 500;
 
-			$message = HTTPHelper::get_code_message($status);
+			$message = Helper\HTTP::get_code_message($status);
 
 		}
 		return Response::json(array($message, $issues), $status);

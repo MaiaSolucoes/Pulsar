@@ -1,4 +1,6 @@
 <?php
+
+namespace Helper;
 /**
  * Created by JetBrains PhpStorm.
  * User: Ricardo
@@ -6,7 +8,7 @@
  * Time: 11:36
  * To change this template use File | Settings | File Templates.
  */ 
-class HTTPHelper {
+class HTTP {
 
 	public static function get_code_message($code) {
 
