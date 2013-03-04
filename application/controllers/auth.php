@@ -18,4 +18,8 @@ class Auth_Controller extends Base_Controller {
 			? Response::json(Auth::user()->to_array(), 200)
 			: Response::json(null, 404);
 	}
+
+	public function get_logout() {
+		Auth::logout();
+	}
 }
