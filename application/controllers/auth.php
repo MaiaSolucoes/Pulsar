@@ -13,9 +13,13 @@ class Auth_Controller extends Base_Controller {
 			'username' => Input::get('username'),
 			'password' => Input::get('password'),
 		);
-
-		return Auth::attempt($credentials)
-			? Response::json(Auth::user()->gid, 200)
-			: Response::json(null, 404);
+        if(empty($credentials)){
+            return Response::json(null, 404);
+        }
+        else{
+            return Auth::attempt($credentials)
+                ? Response::json(Auth::user()->gid, 200)
+                : Response::json(null, 404);
+        }
 	}
 }
