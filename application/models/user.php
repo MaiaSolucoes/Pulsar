@@ -28,16 +28,17 @@ class User extends Eloquent {
 	}
 	
 	public function prepare($inputs) {
-		$this->id = $inputs['id'];
-		$this->gid = $inputs['gid'];
-		$this->first_name = $inputs['first_name'];
-		$this->last_name = $inputs['last_name'];
-		$this->display_name = $inputs['display_name'];
-		$this->email = $inputs['email'];
-		$this->password = Hash::make($inputs['password']);
+		$this->id = @$inputs['id'];
+		$this->gid = @$inputs['gid'];
+		$this->first_name = @$inputs['first_name'];
+		$this->last_name = @$inputs['last_name'];
+		$this->display_name = @$inputs['display_name'];
+		$this->email = @$inputs['email'];
+		$this->password = Hash::make(@$inputs['password']);
 
-		$ignore = $this->id > 0 ? array('email') : null;
-		return Constraint::get_issues($this, $ignore);
+		$replace = $this->id > 0 ? array('email' => 'required|email') : null;
+
+		return Constraint::get_issues($this, null, $replace);
 	}
 
 }

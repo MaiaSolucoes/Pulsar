@@ -25,8 +25,8 @@ class User_Controller extends Base_Controller {
 		}
 
 		return $user instanceof User
-			? Response::json(array(Helper\HTTP::get_code_message(200), $user->to_array()), 200)
-			: Response::json(array(Helper\HTTP::get_code_message(404), null), 404);
+			? Response::json($user->to_array(), 200)
+			: Response::json(null, 404);
 
 	}
 
@@ -35,6 +35,7 @@ class User_Controller extends Base_Controller {
 			try{
 				$user = Input::get('id') > 0 ? User::find(Input::get('id')) : new User();
 				$issues = $user->prepare(Input::get());
+
 				$status = empty($issues) ? $user->save() : false;
 			} catch(Exception $e) {
 				Log::post_user($e->getMessage());
@@ -46,7 +47,12 @@ class User_Controller extends Base_Controller {
 			$message = Helper\HTTP::get_code_message($status);
 
 		}
-		return Response::json(array($message, $issues), $status);
+		return Response::json(
+			empty($issues)
+				? $message
+				: $issues,
+			$status
+		);
 	}
     public function testePrepare(){
         //vou testar o prepare aqui

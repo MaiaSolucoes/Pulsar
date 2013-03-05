@@ -15,10 +15,18 @@ class Constraint extends Eloquent {
 		);
 	}
 
-	public static function get_issues($model, $ignore = array()) {
+	public static function get_issues($model, $ignore = array(), $replace = array()) {
+
+		$ignore = empty($ignore) ? array() : $ignore;
+		$replace = empty($replace) ? array() : $replace;
+
 		$rules = self::get_constraint($model->table())
 			? self::get_constraint($model->table())
 			: $model::get_default_rules();
+
+		foreach($replace as $id => $value) {
+			$rules[$id] = $value;
+		}
 
 		foreach($ignore as $id) {
 			unset($rules[$id]);
