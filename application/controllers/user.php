@@ -13,17 +13,20 @@ class User_Controller extends Base_Controller {
 
 	public function get_user() {
 
-		$id = 'user_'.Input::get('id');
-		Cache::remember(
-			$id,
-			function() {
-				$user = User::find(Input::get('id'));
-				return $user instanceof User
-					? Response::json($user->to_array(), 200)
-					: Response::json($user, 404);
-			},
-			self::$cache_timeout
-		);
+		$user = null;
+		$id = Input::get('id');
+		if(is_numeric($id)) {
+			$cache_id = 'user_'.$id;
+			$user = Cache::remember(
+				$cache_id,
+				function() use($id) { return User::find($id); },
+				self::$cache_timeout
+			);
+		}
+
+		return $user instanceof User
+			? Response::json(array(Helper\HTTP::get_code_message(200), $user->to_array()), 200)
+			: Response::json(array(Helper\HTTP::get_code_message(404), null), 404);
 
 	}
 
