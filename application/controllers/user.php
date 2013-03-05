@@ -14,7 +14,7 @@ class User_Controller extends Base_Controller {
 		$user = User::find(Input::get('id'));
 		return $user instanceof User
 			? Response::json($user->to_array(), 200)
-			: Response::json($user->all(), 404);
+			: Response::json(User::all(), 404);
 	}
 
 	public function post_user() {
