@@ -9,12 +9,22 @@
 class User_Controller extends Base_Controller {
 
 	public $restful = true;
+	private static $cache_timeout = 10;
 
 	public function get_user() {
-		$user = User::find(Input::get('id'));
-		return $user instanceof User
-			? Response::json($user->to_array(), 200)
-			: Response::json($user, 404);
+
+		$id = 'user_'.Input::get('id');
+		Cache::remember(
+			$id,
+			function() {
+				$user = User::find(Input::get('id'));
+				return $user instanceof User
+					? Response::json($user->to_array(), 200)
+					: Response::json($user, 404);
+			},
+			self::$cache_timeout
+		);
+
 	}
 
 	public function post_user() {
