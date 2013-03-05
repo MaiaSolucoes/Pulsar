@@ -30,8 +30,10 @@ class User_Controller extends Base_Controller {
 
 			$status = $status ? 200 : 500;
 
+			$message = Helper\HTTP::get_code_message($status);
+
 		}
-		return Response::json($issues, $status);
+		return Response::json(array($message, $issues), $status);
 	}
     public function testePrepare(){
 
