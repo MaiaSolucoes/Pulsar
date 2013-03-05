@@ -15,7 +15,7 @@ class Auth_Controller extends Base_Controller {
 		);
 
 		return Auth::attempt($credentials)
-			? Response::json(Auth::user()->to_array(), 200)
+			? Response::json(Auth::user()->gid, 200)
 			: Response::json(null, 404);
 	}
 }
