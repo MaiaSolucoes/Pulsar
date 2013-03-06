@@ -19,7 +19,7 @@ class Auth_Controller extends Base_Controller {
 			'password' => Input::get('password'),
 		);
 
-        if(empty($credentials)){
+        if(empty($credentials['username']) or empty($credentials['password'])){
             return Response::json(null, 412);
         } else {
            $response = Cache::remember(
