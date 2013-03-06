@@ -39,6 +39,7 @@ class Auth_Controller extends Base_Controller {
 			if($response->status() == 404) {
 				Cache::forget($cache_id);
 			}
+			return $response;
 
         }
 	}
