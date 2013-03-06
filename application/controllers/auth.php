@@ -22,8 +22,7 @@ class Auth_Controller extends Base_Controller {
 
         if(empty($credentials)){
             return Response::json(null, 412);
-        }
-        else{
+        } else {
             Cache::remember(
                 $token,
                 function() use($token) { return $token; },
@@ -31,8 +30,7 @@ class Auth_Controller extends Base_Controller {
             );
             if(Auth::attempt($credentials)){
                 return Response::json($token, 200);
-            }
-            else{
+            } else {
                 return Response::json(null, 404);
             }
         }
