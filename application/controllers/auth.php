@@ -22,8 +22,7 @@ class Auth_Controller extends Base_Controller {
         if(empty($credentials)){
             return Response::json(null, 412);
         } else {
-			//TODO: if Auth::attempt fails, what happens with its Session::token()?
-            Cache::remember(
+           $response = Cache::remember(
                 $cache_id,
                 function() use($credentials) {
 					return Auth::attempt($credentials)
@@ -32,6 +31,14 @@ class Auth_Controller extends Base_Controller {
 				},
                 self::$cache_timeout
             );
+
+			/**
+			 * If Auth::attempt() fails, what happens with its Session::token()?
+			 * This code fix it in case of 404 response.
+			 **/
+			if($response->status() == 404) {
+				Cache::forget($cache_id);
+			}
 
         }
 	}
