@@ -21,8 +21,7 @@ class Auth_Controller extends Base_Controller {
 
         if(empty($credentials)){
             return Response::json(null, 412);
-        }
-        else{
+        } else {
 			//TODO: if Auth::attempt fails, what happens with its Session::token()?
             Cache::remember(
                 $cache_id,
