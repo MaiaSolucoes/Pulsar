@@ -11,7 +11,8 @@ class Auth_Controller extends Base_Controller {
 	}
 
 	public function get_login() {
-		$token = Session::token();
+
+		$cache_id = 'auth_'.Input::get('username');
 
         $credentials = array(
 			'username' => Input::get('username'),
@@ -22,17 +23,17 @@ class Auth_Controller extends Base_Controller {
             return Response::json(null, 412);
         }
         else{
+			//TODO: if Auth::attempt fails, what happens with its Session::token()?
             Cache::remember(
-                $token,
-                function() use($token) { return $token; },
+                $cache_id,
+                function() use($credentials) {
+					return Auth::attempt($credentials)
+						? Response::json(Session::token(), 200)
+						: Response::json(null, 404);
+				},
                 self::$cache_timeout
             );
-            if(Auth::attempt($credentials)){
-                return Response::json($token, 200);
-            }
-            else{
-                return Response::json(null, 404);
-            }
+
         }
 	}
 
