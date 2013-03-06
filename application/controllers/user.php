@@ -35,17 +35,5 @@ class User_Controller extends Base_Controller {
 		}
 		return Response::json(array($message, $issues), $status);
 	}
-    public function testePrepare(){
-
-        $const = new Constraint();
-        //criar valores de teste para mandar para o metodo abaixo
-
-
-        //$const->get_issues();
-
-
-
-
-    }
 
 }

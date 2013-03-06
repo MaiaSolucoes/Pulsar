@@ -4,6 +4,9 @@ class Auth_Controller extends Base_Controller {
 
 	public $restful = true;
 
+    private static $cache_timeout = 10;
+
+
 	public function get_index() {
 		return View::make('home.index');
 	}
@@ -13,13 +16,22 @@ class Auth_Controller extends Base_Controller {
 			'username' => Input::get('username'),
 			'password' => Input::get('password'),
 		);
+
         if(empty($credentials)){
-            return Response::json(null, 404);
+            return Response::json('branco', 412);
         }
         else{
-            return Auth::attempt($credentials)
-                ? Response::json(Auth::user()->gid, 200)
-                : Response::json(null, 404);
+            Cache::remember(
+                $token = Session::token(),
+                function() use($token) { return $token; },
+                self::$cache_timeout
+            );
+            if(Auth::attempt($credentials)){
+                return Response::json(Session::token(), 200);
+            }
+            else{
+                return Response::json('nulo', 404);
+            }
         }
 	}
 }
