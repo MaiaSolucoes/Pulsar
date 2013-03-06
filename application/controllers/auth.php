@@ -6,7 +6,6 @@ class Auth_Controller extends Base_Controller {
 
     private static $cache_timeout = 10;
 
-
 	public function get_index() {
 		return View::make('home.index');
 	}
