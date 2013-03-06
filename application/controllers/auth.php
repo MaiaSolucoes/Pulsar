@@ -12,25 +12,28 @@ class Auth_Controller extends Base_Controller {
 	}
 
 	public function get_login() {
-		$credentials = array(
+		$token = Session::token();
+
+        $credentials = array(
 			'username' => Input::get('username'),
 			'password' => Input::get('password'),
 		);
 
+
         if(empty($credentials)){
-            return Response::json('branco', 412);
+            return Response::json(null, 412);
         }
         else{
             Cache::remember(
-                $token = Session::token(),
+                $token,
                 function() use($token) { return $token; },
                 self::$cache_timeout
             );
             if(Auth::attempt($credentials)){
-                return Response::json(Session::token(), 200);
+                return Response::json($token, 200);
             }
             else{
-                return Response::json('nulo', 404);
+                return Response::json(null, 404);
             }
         }
 	}
