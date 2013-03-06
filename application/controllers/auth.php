@@ -19,7 +19,6 @@ class Auth_Controller extends Base_Controller {
 			'password' => Input::get('password'),
 		);
 
-
         if(empty($credentials)){
             return Response::json(null, 412);
         }
