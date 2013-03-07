@@ -19,7 +19,7 @@ class Auth_Controller extends Base_Controller {
         );
 
         if(empty($credentials['username']) or empty($credentials['password'])) {
-            return Response::json('embranco', 412);
+            return Response::json(null, 412);
         } else {
 			if(Auth::attempt($credentials)) {
 				$response = Cache::remember(
