@@ -25,9 +25,13 @@ class Auth_Controller extends Base_Controller {
            $response = Cache::remember(
                 $cache_id,
                 function() use($credentials) {
-					return Auth::attempt($credentials)
-						? Response::json(Session::token(), 200)
-						: Response::json(null, 404);
+					if(Auth::attempt($credentials)) {
+						$token = Session::token();
+						Cache::put($token, Auth::user()->to_array(), self::$cache_timeout);
+						return Response::json($token, 200);
+					} else {
+						return Response::json(null, 404);
+					}
 				},
                 self::$cache_timeout
             );
