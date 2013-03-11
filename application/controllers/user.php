@@ -12,8 +12,16 @@ class User_Controller extends Base_Controller {
 	private static $cache_timeout = 10;
 
 	public function get_user() {
+        $token = Input::get('token');
+        if(Cache::has($token)){
+            $user = Cache::get($token);
+        } else {
+            $user = 'Cache expirado';
+        }
+        return $user;
 
-		$user = null;
+
+		/*$user = null;
 		$id = Input::get('id');
 		if(is_numeric($id)) {
 			$cache_id = 'user_'.$id;
@@ -26,7 +34,7 @@ class User_Controller extends Base_Controller {
 
 		return $user instanceof User
 			? Response::json($user->to_array(), 200)
-			: Response::json(null, 404);
+			: Response::json(null, 404);*/
 
 	}
 
