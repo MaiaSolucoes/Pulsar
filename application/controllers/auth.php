@@ -4,7 +4,7 @@ class Auth_Controller extends Base_Controller {
 
     public $restful = true;
 
-    private static $cache_timeout = 1;
+    private static $cache_timeout = 2;
 
     public function get_index() {
         return View::make('home.index');
@@ -18,16 +18,18 @@ class Auth_Controller extends Base_Controller {
             'username' => Input::get('username'),
             'password' => Input::get('password'),
         );
+        $time = Auth_Controller::$cache_timeout;
+        $token = Session::token();
+
 
         if(empty($credentials['username']) or empty($credentials['password'])){
             return Response::json(null, 412);
         } else {
             $response = Cache::remember(
                 $cache_id,
-                function() use($credentials) {
+                function() use($credentials,$time,$token) {
                     if(Auth::attempt($credentials)) {
-                        $token = Session::token();
-                        Cache::put($token, json_encode(Auth::user()->to_array()), 1);
+                        Cache::put($token, json_encode(Auth::user()->to_array()),$time);
                         return Response::json($token, 200);
                     } else {
                         return Response::json(null, 404);
@@ -36,23 +38,23 @@ class Auth_Controller extends Base_Controller {
                 self::$cache_timeout
             );
 
-            /**
-             * If Auth::attempt() fails, what happens with its Session::token()?
-             * This code fix it in case of 404 response.
-             **/
             if($response->status() == 404) {
-                Cache::forget($cache_id);
+                $this->get_logout($cache_id);
+                return $response;//aqui vai outro teste pra ver se apaga
             }
-            return $response;
 
+            return $response;
         }
     }
 
     public function get_logout() {
+        $user = Input::get('username');
         Auth::logout();
-        $cache_id = 'auth_'.Input::get('username');
-        Cache::forget($cache_id);
-        Cache::forget();
 
+        //aqui estou testando pra ver se apaga ou nao
+        //esta apagando so nao consigo provar
+        Cache::forget('autasdh_'.$user) == 0? $tes = 'apagou': $tes = 'nao apagou';
+
+        return Response::json($user.' =  logout feito '.$tes,200);
     }
 }

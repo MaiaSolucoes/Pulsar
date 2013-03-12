@@ -12,29 +12,10 @@ class User_Controller extends Base_Controller {
 	private static $cache_timeout = 10;
 
 	public function get_user() {
+
         $token = Input::get('token');
-        if(Cache::has($token)){
-            $user = Cache::get($token);
-        } else {
-            $user = 'Cache expirado';
-        }
+        Cache::has($token) ? $user = Cache::get($token): $user = 'Cache expirado';
         return $user;
-
-
-		/*$user = null;
-		$id = Input::get('id');
-		if(is_numeric($id)) {
-			$cache_id = 'user_'.$id;
-			$user = Cache::remember(
-				$cache_id,
-				function() use($id) { return User::find($id); },
-				self::$cache_timeout
-			);
-		}
-
-		return $user instanceof User
-			? Response::json($user->to_array(), 200)
-			: Response::json(null, 404);*/
 
 	}
 
