@@ -56,4 +56,5 @@ class Auth_Controller extends Base_Controller {
 
         return Response::json(null,204);
     }
+
 }
