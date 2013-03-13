@@ -4,7 +4,7 @@ class Auth_Controller extends Base_Controller {
 
     public $restful = true;
 
-    private static $cache_timeout = 10;
+    private static $cache_timeout = 1;
 
     public function get_index() {
         return View::make('home.index');
@@ -50,11 +50,21 @@ class Auth_Controller extends Base_Controller {
     }
 
     public function get_logout() {
-        $user = Input::get('username');
-        Auth::logout();
-        Cache::forget('auth_'.$user);
+        if (Auth::check()) {
+            $user = 'auth_'.Auth::user()->email;
+            Cache::forget($user);
+            Auth::logout();
+            return "VOCE DESLOGOU E APAGOU O CACHE";
+        } else {
+            return "VOCE NAO ESTA AUTENTICADO PARA FAZER O LOGOUT";
+        }
+    }
 
-        return Response::json(null,204);
+
+    public function get_check(){
+        return Auth::check() ? Response::json('yes',200) : Response::json('no',200);
+
+        //return Response::json($token,200)
     }
 
 }
