@@ -11,10 +11,22 @@ class User_Controller extends Base_Controller {
 	public $restful = true;
 	private static $cache_timeout = 10;
 
-	public function get_user() {
+	public function get_user(){
 
-        $token = Input::get('token');
-        Cache::has($token) ? $user = Cache::get($token): $user = 'Cache expirado';
+        $cache_token = Cache::has('token') ? Cache::get('token') : null;//pega o token do cache
+        $user = null;
+
+
+        if($cache_token == null){
+            $user = 'Cache expirado';
+        } else {
+            if(Auth::check()){
+
+                $user = Auth::user()->to_array();
+
+            };
+        }
+
         return $user;
 
 	}

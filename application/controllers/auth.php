@@ -12,8 +12,6 @@ class Auth_Controller extends Base_Controller {
 
     public function get_login() {
 
-        $cache_id = 'auth_'.Input::get('username');
-
         $credentials = array(
             'username' => Input::get('username'),
             'password' => Input::get('password'),
@@ -25,34 +23,26 @@ class Auth_Controller extends Base_Controller {
             return Response::json(null, 412);
         } else {
             $response = Cache::remember(
-                $cache_id,
+                'token',
                 function() use($credentials,$time,$token) {
-
                     if(Auth::attempt($credentials)) {
-                        Cache::put($token, json_encode(Auth::user()->to_array()),$time);
-                        return Response::json($token, 200);
+                        return $token;
                     } else {
-                        return Response::json(null, 404);
+                        return null;
                     }
-
                 },
-                self::$cache_timeout
+                $time
             );
-
-            if($response->status() == 404) {
-
+            if($response == null) {
                 return $this->get_logout();
-
             }
-
-            return $response;
+            return Response::json(array('token' => $response),200);
         }
     }
 
     public function get_logout() {
         if (Auth::check()) {
-            $user = 'auth_'.Auth::user()->email;
-            Cache::forget($user);
+            Cache::forget('token');
             Auth::logout();
             return "VOCE DESLOGOU E APAGOU O CACHE";
         } else {
@@ -62,7 +52,7 @@ class Auth_Controller extends Base_Controller {
 
 
     public function get_check(){
-        return Auth::check() ? Response::json(true,200) : Response::json(false,200);
+        return Cache::has('token') ? Response::json(true,200) : Response::json(false,200);
 
         //return Response::json($token,200)
     }
