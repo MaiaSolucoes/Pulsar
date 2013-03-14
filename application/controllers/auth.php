@@ -62,7 +62,7 @@ class Auth_Controller extends Base_Controller {
 
 
     public function get_check(){
-        return Auth::check() ? Response::json('yes',200) : Response::json('no',200);
+        return Auth::check() ? Response::json(true,200) : Response::json(false,200);
 
         //return Response::json($token,200)
     }
