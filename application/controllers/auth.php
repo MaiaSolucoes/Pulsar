@@ -41,7 +41,7 @@ class Auth_Controller extends Base_Controller {
     }
 
     public function get_logout() {
-        if (Auth::check()) {
+        if (!Auth::guest()) {
             Cache::forget('token');
             Auth::logout();
             return "VOCE DESLOGOU E APAGOU O CACHE";
@@ -52,7 +52,10 @@ class Auth_Controller extends Base_Controller {
 
 
     public function get_check(){
-        return Cache::has('token') ? Response::json(true,200) : Response::json(false,200);
+        if (Auth::check()) {
+            return Cache::has('token') ? Response::json(array('auth' => true),200) : Response::json(array('auth' => false),200);
+        }
+        return Response::json(array('auth' => false), 200);
 
         //return Response::json($token,200)
     }
