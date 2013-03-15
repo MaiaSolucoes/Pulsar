@@ -77,6 +77,9 @@ class Auth_Controller extends Base_Controller {
         $user = Input::get('username');
 
         $token = Input::get('token');
+        //return Cache::has($user) ? 'sim' : 'nao';
+
+        //return $cache_token = Cache::get($user).'get';
 
         $response = Response::json(false,200);
 
