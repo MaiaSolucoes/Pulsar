@@ -22,9 +22,10 @@ class Auth_Controller extends Base_Controller {
         if(empty($credentials['username']) or empty($credentials['password'])){
             return Response::json(null, 412);
         } else {
+            $cache_id = Input::get('username');
             $response = Cache::remember(
-                'token',
-                function() use($credentials,$time,$token) {
+                $cache_id,
+                function() use($credentials,$token) {
                     if(Auth::attempt($credentials)) {
                         return $token;
                     } else {
@@ -34,27 +35,66 @@ class Auth_Controller extends Base_Controller {
                 $time
             );
             if($response == null) {
-                return $this->get_logout();
+                return $this->get_logout($cache_id,$token);
             }
-            return Response::json(array('token' => $response),200);
+            return Response::json(array($cache_id => $response),200);
         }
     }
 
-    public function get_logout() {
-        if (Auth::check()) {
-            Cache::forget('token');
-            Auth::logout();
-            return "VOCE DESLOGOU E APAGOU O CACHE";
+    public function get_logout(){
+
+        $user = Input::get('username');
+
+        $token = Input::get('token');
+
+        $response = Response::json(false,200);
+
+        $cache_token = false;
+
+        if(empty($user) or empty($token)){
+
+            return $response;
+
         } else {
-            return "VOCE NAO ESTA AUTENTICADO PARA FAZER O LOGOUT";
-        }
-    }
 
+            Cache::has($user) ? $cache_token = Cache::get($user):null;
+
+            if($token == $cache_token){
+
+                Cache::forget($user);
+                $response = Response::json(true,200);
+
+            }
+
+        }
+
+        return $response;
+
+    }
 
     public function get_check(){
-        return Cache::has('token') ? Response::json(true,200) : Response::json(false,200);
 
-        //return Response::json($token,200)
+        $user = Input::get('username');
+
+        $token = Input::get('token');
+
+        $response = Response::json(false,200);
+
+        $cache_token = false;
+
+        if(empty($user) or empty($token)){
+
+            return $response;
+
+        } else {
+
+            Cache::has($user) ? $cache_token = Cache::get($user) : null;
+
+            $token == $cache_token ? $response = Response::json(true,200) : null;
+
+            return $response;
+        }
+
     }
 
 }
