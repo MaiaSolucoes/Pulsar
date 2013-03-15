@@ -35,7 +35,7 @@ class Auth_Controller extends Base_Controller {
                 $time
             );
             if($response == null) {
-                return $this->get_logout($cache_id,$token);
+                return $this->get_logout();
             }
             return Response::json(array($cache_id => $response),200);
         }
@@ -73,7 +73,7 @@ class Auth_Controller extends Base_Controller {
     }
 
     public function get_check(){
-
+        
         $user = Input::get('username');
 
         $token = Input::get('token');
