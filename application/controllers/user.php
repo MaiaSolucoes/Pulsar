@@ -13,7 +13,7 @@ class User_Controller extends Base_Controller {
 
 	public function get_user(){
 
-        $cache_token = Cache::has('token') ? Cache::get('token') : null;//pega o token do cache
+        $cache_token = Cache::has('algo') ? Cache::get('token') : null;//pega o token do cache
         $user = null;
 
 
