@@ -17,7 +17,6 @@ class Auth_Controller extends Base_Controller {
             'password' => Input::get('password'),
         );
         $time = Auth_Controller::$cache_timeout;
-        $token = Session::token();
 
         if(empty($credentials['username']) or empty($credentials['password'])){
             return Response::json(null, 412);
@@ -25,9 +24,10 @@ class Auth_Controller extends Base_Controller {
             $cache_id = Input::get('username');
             $response = Cache::remember(
                 $cache_id,
-                function() use($credentials,$token) {
+                function() use($credentials) {
+
                     if(Auth::attempt($credentials)) {
-                        return $token;
+                        return Session::token();
                     } else {
                         return null;
                     }

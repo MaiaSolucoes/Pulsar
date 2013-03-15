@@ -22,9 +22,15 @@ class User_Controller extends Base_Controller {
         } else {
             if(Auth::check()){
 
+                //verificar se existe um cache com os dados do cara, se tiver retorna
+                //se nao tiver consulta o banco cria um cache e retorna
+
                 //nao podemos usar esse Auth::user()
                 //pq nao sei quem eh esse user? se tiver 10 cache de 10 cara? quem sera esse Auth::user()???
                 //nao sei se alguem souber me explica...ate amanha pessoal
+
+
+
                 $user = Auth::user()->to_array();
 
             };
