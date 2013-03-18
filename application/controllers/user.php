@@ -11,32 +11,50 @@ class User_Controller extends Base_Controller {
 	public $restful = true;
 	private static $cache_timeout = 10;
 
+    /*
+     * private function check() {
+     *      if (Auth::check()) {
+     *          return true
+     *      }
+     * return false
+     */
+
 	public function get_user(){
 
-        $cache_token = Cache::has('algo') ? Cache::get('token') : null;//pega o token do cache
-        $user = null;
+        if (Auth::check()) { // or true so para teste sem se autenticar
 
+            if (Input::has('email') and Input::has('id')) {
 
-        if($cache_token == null){
-            $user = 'Cache expirado';
-        } else {
-            if(Auth::check()){
+                $status = 500;
 
-                //verificar se existe um cache com os dados do cara, se tiver retorna
-                //se nao tiver consulta o banco cria um cache e retorna
+            } elseif (Input::has('email')) {
 
-                //nao podemos usar esse Auth::user()
-                //pq nao sei quem eh esse user? se tiver 10 cache de 10 cara? quem sera esse Auth::user()???
-                //nao sei se alguem souber me explica...ate amanha pessoal
+                $status = 200;
+                $field = 'email';
 
+            } elseif (Input::has('id')) {
 
+                $status = 200;
+                $field = 'id';
 
-                $user = Auth::user()->to_array();
+            } else {
 
-            };
+                $status = 400;
+
+            }
+            $user = '';
+
+            if ($status == 200) {
+                $fields_bd = array('id', 'gid', 'display_name', 'first_name', 'last_name', 'created_at', 'updated_at');
+                $user = DB::table('users')->where($field, '=', Input::get($field))->get($fields_bd);
+            }
+
+            $message = Helper\HTTP::get_code_message($status);
+
+            return Response::json(array('status' => $message, 'results' => $user), $status);
         }
 
-        return $user;
+        return Response::json(array('status' => Helper\HTTP::get_code_message(401)), 401);
 
 	}
 
