@@ -20,6 +20,7 @@ class User_Controller extends Base_Controller {
             return Response::json('blank');
 
         }
+
         $cache_token = Cache::has($username) ? Cache::get($username) : null;
         $validation = $token == $cache_token ? true : false;
 
