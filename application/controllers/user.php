@@ -9,7 +9,7 @@
 class User_Controller extends Base_Controller {
 
 	public $restful = true;
-	private static $cache_timeout = 10;
+	private static $cache_timeout = 10;//isso ainda nao uso
 
 	public function get_user(){
 
@@ -33,7 +33,6 @@ class User_Controller extends Base_Controller {
 
             $data = 'Cache expired';
 
-            };
         }
 
         return Response::json($data);
