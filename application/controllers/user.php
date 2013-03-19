@@ -5,7 +5,7 @@
  * Date: 17/01/13
  * Time: 02:56
  * To change this template use File | Settings | File Templates.
- */ 
+ */
 class User_Controller extends Base_Controller {
 
 	public $restful = true;
@@ -13,30 +13,29 @@ class User_Controller extends Base_Controller {
 
 	public function get_user(){
 
-        $cache_token = Cache::has('algo') ? Cache::get('token') : null;//pega o token do cache
-        $user = null;
+        $username = Input::get('username');
+        $token = Input::get('token');
+        if(is_null($username) or is_null($token)){
 
+            return Response::json('blank');
 
-        if($cache_token == null){
-            $user = 'Cache expirado';
+        }
+        $cache_token = Cache::has($username) ? Cache::get($username) : null;
+        $validation = $token == $cache_token ? true : false;
+
+        $data = null;
+
+        if($validation){
+
+            $data = DB::query('SELECT * FROM users WHERE email = ?', array(Input::get('username')));
+
         } else {
-            if(Auth::check()){
 
-                //verificar se existe um cache com os dados do cara, se tiver retorna
-                //se nao tiver consulta o banco cria um cache e retorna
+            $data = 'Cache expired';
 
-                //nao podemos usar esse Auth::user()
-                //pq nao sei quem eh esse user? se tiver 10 cache de 10 cara? quem sera esse Auth::user()???
-                //nao sei se alguem souber me explica...ate amanha pessoal
-
-
-
-                $user = Auth::user()->to_array();
-
-            };
         }
 
-        return $user;
+        return Response::json($data);
 
 	}
 

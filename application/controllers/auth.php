@@ -4,7 +4,7 @@ class Auth_Controller extends Base_Controller {
 
     public $restful = true;
 
-    private static $cache_timeout = 1;
+    private static $cache_timeout = 2;
 
     public function get_index() {
 
