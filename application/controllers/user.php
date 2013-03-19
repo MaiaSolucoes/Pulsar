@@ -5,7 +5,7 @@
  * Date: 17/01/13
  * Time: 02:56
  * To change this template use File | Settings | File Templates.
- */
+ */ 
 class User_Controller extends Base_Controller {
 
 	public $restful = true;
@@ -33,6 +33,7 @@ class User_Controller extends Base_Controller {
 
             $data = 'Cache expired';
 
+            };
         }
 
         return Response::json($data);
