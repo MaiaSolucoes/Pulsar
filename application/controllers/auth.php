@@ -26,114 +26,62 @@ class Auth_Controller extends Base_Controller {
             return Response::json(null, 412);
 
         } else {
-            if (Auth::attempt($credentials)) {
+
+            if(Auth::attempt($credentials)) {
 
                 $token = Session::token();
-                Cache::put($token, $credentials['username'], self::$cache_timeout);
-                return Response::json(
-                    array(
-                        'token' => $token,
-                        'username' => $credentials['username']
-                    ),
-                    200
-                );
+                Cache::put($token,$credentials['username'],$time);
+                return Response::json(array('token' => $token,'username' => $credentials['username']),200);
 
             } else {
 
                 return $this->get_logout();
 
             }
-/*
-            $cache_id = Input::get('username');
-            $response = Cache::remember(
-                'token',
-                function() use($credentials) {
 
-                    if(Auth::attempt($credentials)) {
-
-                        return Session::token();
-
-                    } else {
-
-                        return null;
-                    }
-                },
-                $time
-            );
-
-            if($response == null) {
-
-                return $this->get_logout();
-
-            }
-
-            return Response::json(
-                array(
-                    'token' => $response,
-                    'username' => $cache_id
-                ),
-                200
-            );
-*/
         }
+
     }
 
     public function get_logout(){
 
-        $user = Input::get('username');
-
         $token = Input::get('token');
 
-        $response = Response::json(false,200);
+        if(!is_null($token)){
 
-        $cache_token = false;
+            $cache_token = Cache::has($token) ? true : false;
 
-        if(empty($user) or empty($token)){
+            if($cache_token){
 
-            return $response;
-
-        } else {
-
-            Cache::has($user) ? $cache_token = Cache::get($user):null;
-
-            if($token == $cache_token){
-
-                Cache::forget($user);
-                $response = Response::json(true,200);
+                Cache::forget($token);
+                return Response::json(true,200);
 
             }
 
-        }
+            return Response::json(false,200);
 
-        return $response;
+        }
 
     }
 
     public function get_check(){
-        
-        $user = Input::get('username');
 
         $token = Input::get('token');
 
-        $response = Response::json(false,200);
+        if(!is_null($token)){
 
-        $cache_token = false;
+            $user = Cache::has($token) ? Cache::get($token) : null;
 
-        if(is_null($user) or is_null($token)){
+            if(!is_null($user)){
 
-            return $response;
+                Cache::put($token, $user,1);
+                return Response::json(true,200);
 
-        } else {
-
-            Cache::has($user) ? $cache_token = Cache::get($user) : null;
-
-            if($token == $cache_token){
-
-                $response = Response::json(true,200);
-                Cache::put($user,$token,1);
             }
-            return $response;
+
         }
+
+        return Response::json(false,200);
 
     }
 

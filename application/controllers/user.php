@@ -20,7 +20,9 @@ class User_Controller extends Base_Controller {
 
 	public function get_user(){
 
-        if (Cache::has(Input::get('token'))) { // verify on cache to auth
+        $verify = Cache::has(Input::get('token')) ? true : false;
+
+        if ($verify) {
 
             if (Input::has('email') and Input::has('id')) {
 
@@ -53,7 +55,6 @@ class User_Controller extends Base_Controller {
         }
 
         return Response::json(array('status' => Helper\HTTP::get_code_message(401)), 401);
-
 
 	}
 
