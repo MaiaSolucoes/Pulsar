@@ -11,32 +11,49 @@ class User_Controller extends Base_Controller {
 	public $restful = true;
 	private static $cache_timeout = 10;//isso ainda nao uso
 
+    /*private function verify($token) {
+        if (is_null($username) or is_null($token)) {
+            return "empty";
+        }
+        return Cache::has($token) ? true : false;
+    }*/
+
 	public function get_user(){
 
-        $username = Input::get('username');
-        $token = Input::get('token');
-        if(is_null($username) or is_null($token)){
+        if (Cache::has(Input::get('token'))) { // verify on cache to auth
 
-            return Response::json('blank');
+            if (Input::has('email') and Input::has('id')) {
 
+                $status = 500;
+
+            } elseif (Input::has('email')) {
+
+                $status = 200;
+                $field = 'email';
+
+            } elseif (Input::has('id')) {
+
+                $status = 200;
+                $field = 'id';
+
+            } else {
+
+                $status = 400;
+
+            }
+            $fields_bd = array('id', 'gid', 'display_name', 'first_name', 'last_name', 'created_at', 'updated_at');
+
+            $user = $status == 200
+                ? DB::table('users')->where($field, '=', Input::get($field))->get($fields_bd)
+                : '';
+
+            $message = Helper\HTTP::get_code_message($status);
+
+            return Response::json(array('status' => $message, 'results' => $user), $status);
         }
 
-        $cache_token = Cache::has($username) ? Cache::get($username) : null;
-        $validation = $token == $cache_token ? true : false;
+        return Response::json(array('status' => Helper\HTTP::get_code_message(401)), 401);
 
-        $data = null;
-
-        if($validation){
-
-            $data = DB::query('SELECT * FROM users WHERE email = ?', array(Input::get('username')));
-
-        } else {
-
-            $data = 'Cache expired';
-
-        }
-
-        return Response::json($data);
 
 	}
 

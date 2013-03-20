@@ -26,10 +26,27 @@ class Auth_Controller extends Base_Controller {
             return Response::json(null, 412);
 
         } else {
+            if (Auth::attempt($credentials)) {
 
+                $token = Session::token();
+                Cache::put($token, $credentials['username'], self::$cache_timeout);
+                return Response::json(
+                    array(
+                        'token' => $token,
+                        'username' => $credentials['username']
+                    ),
+                    200
+                );
+
+            } else {
+
+                return $this->get_logout();
+
+            }
+/*
             $cache_id = Input::get('username');
             $response = Cache::remember(
-                $cache_id,
+                'token',
                 function() use($credentials) {
 
                     if(Auth::attempt($credentials)) {
@@ -50,8 +67,14 @@ class Auth_Controller extends Base_Controller {
 
             }
 
-            return Response::json(array($cache_id => $response),200);
-
+            return Response::json(
+                array(
+                    'token' => $response,
+                    'username' => $cache_id
+                ),
+                200
+            );
+*/
         }
     }
 
