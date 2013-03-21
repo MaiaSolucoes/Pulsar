@@ -11,13 +11,6 @@ class User_Controller extends Base_Controller {
 	public $restful = true;
 	private static $cache_timeout = 10;//isso ainda nao uso
 
-    /*private function verify($token) {
-        if (is_null($username) or is_null($token)) {
-            return "empty";
-        }
-        return Cache::has($token) ? true : false;
-    }*/
-
 	public function get_user(){
 
         $verify = Cache::has(Input::get('token')) ? true : false;
@@ -45,13 +38,24 @@ class User_Controller extends Base_Controller {
             }
             $fields_bd = array('id', 'gid', 'display_name', 'first_name', 'last_name', 'created_at', 'updated_at');
 
-            $user = $status == 200
-                ? DB::table('users')->where($field, '=', Input::get($field))->get($fields_bd)
-                : '';
+            if($status == 200){
+
+                if(Cache::has(Input::get($field))){
+
+                    $user = Cache::get(Input::get($field));
+
+                } else {
+
+                    $user = DB::table('users')->where($field, '=', Input::get($field))->get($fields_bd);
+                    Cache::put(Input::get($field),$user,1);
+
+                }
+
+            }
 
             $message = Helper\HTTP::get_code_message($status);
 
-            return Response::json(array('status' => $message, 'results' => $user), $status);
+            return Response::json(array('status' => $message, Input::get($field) => $user), $status);
         }
 
         return Response::json(array('status' => Helper\HTTP::get_code_message(401)), 401);
