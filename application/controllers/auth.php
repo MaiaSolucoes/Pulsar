@@ -2,54 +2,85 @@
 
 class Auth_Controller extends Base_Controller {
 
-	public $restful = true;
+    public $restful = true;
 
-    private static $cache_timeout = 10;
+    private static $cache_timeout = 2;
 
-	public function get_index() {
-		return View::make('home.index');
-	}
+    public function get_index() {
 
-	public function get_login() {
+        return View::make('home.index');
 
-		$cache_id = 'auth_'.Input::get('username');
+    }
+
+    public function get_login() {
 
         $credentials = array(
-			'username' => Input::get('username'),
-			'password' => Input::get('password'),
-		);
+            'username' => Input::get('username'),
+            'password' => Input::get('password'),
+        );
 
         if(empty($credentials['username']) or empty($credentials['password'])){
-            return Response::json(null, 412);
-        } else {
-           $response = Cache::remember(
-                $cache_id,
-                function() use($credentials) {
-					if(Auth::attempt($credentials)) {
-						$token = Session::token();
-						Cache::put($token, Auth::user()->to_array(), self::$cache_timeout);
-						return Response::json($token, 200);
-					} else {
-						return Response::json(null, 404);
-					}
-				},
-                self::$cache_timeout
-            );
 
-			/**
-			 * If Auth::attempt() fails, what happens with its Session::token()?
-			 * This code fix it in case of 404 response.
-			 **/
-			if($response->status() == 404) {
-				Cache::forget($cache_id);
-			}
-			return $response;
+            return Response::json(null, 412);
+
+        } else {
+
+            if(Auth::attempt($credentials)) {
+
+                $token = Session::token();
+                Cache::put($token,$credentials['username'],self::$cache_timeout);
+                return Response::json(array('token' => $token,'username' => $credentials['username']),200);
+
+            } else {
+
+                return $this->get_logout();
+
+            }
 
         }
-	}
 
-	public function get_logout() {
-		Auth::logout();
-		return View::make('home.logout');
-	}
+    }
+
+    public function get_logout(){
+
+        $token = Input::get('token');
+
+        if(!is_null($token)){
+
+            $cache_token = Cache::has($token) ? true : false;
+
+            if($cache_token){
+
+                Cache::forget($token);
+                return Response::json(true,200);
+
+            }
+
+            return Response::json(false,200);
+
+        }
+
+    }
+
+    public function get_check(){
+
+        $token = Input::get('token');
+
+        if(!is_null($token)){
+
+            $user = Cache::has($token) ? Cache::get($token) : null;
+
+            if(!is_null($user)){
+
+                Cache::put($token, $user,self::$cache_timeout);
+                return Response::json(true,200);
+
+            }
+
+        }
+
+        return Response::json(false,200);
+
+    }
+
 }

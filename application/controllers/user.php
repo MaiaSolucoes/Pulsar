@@ -9,24 +9,56 @@
 class User_Controller extends Base_Controller {
 
 	public $restful = true;
-	private static $cache_timeout = 10;
+	private static $cache_timeout = 2;
 
-	public function get_user() {
+	public function get_user(){
 
-		$user = null;
-		$id = Input::get('id');
-		if(is_numeric($id)) {
-			$cache_id = 'user_'.$id;
-			$user = Cache::remember(
-				$cache_id,
-				function() use($id) { return User::find($id); },
-				self::$cache_timeout
-			);
-		}
+        $verify = Cache::has(Input::get('token')) ? true : false;
 
-		return $user instanceof User
-			? Response::json($user->to_array(), 200)
-			: Response::json(null, 404);
+        if ($verify) {
+
+            if (Input::has('email') and Input::has('id')) {
+
+                $status = 500;
+
+            } elseif (Input::has('email')) {
+
+                $status = 200;
+                $field = 'email';
+
+            } elseif (Input::has('id')) {
+
+                $status = 200;
+                $field = 'id';
+
+            } else {
+
+                $status = 400;
+
+            }
+            $fields_bd = array('id', 'gid', 'display_name', 'first_name', 'last_name', 'created_at', 'updated_at');
+
+            if($status == 200){
+
+                if(Cache::has(Input::get($field))){
+
+                    $user = Cache::get(Input::get($field));
+
+                } else {
+
+                    $user = DB::table('users')->where($field, '=', Input::get($field))->get($fields_bd);
+                    Cache::put(Input::get($field),$user,self::$cache_timeout);
+
+                }
+
+            }
+
+            $message = Helper\HTTP::get_code_message($status);
+
+            return Response::json(array('status' => $message, Input::get($field) => $user), $status);
+        }
+
+        return Response::json(array('status' => Helper\HTTP::get_code_message(401)), 401);
 
 	}
 
