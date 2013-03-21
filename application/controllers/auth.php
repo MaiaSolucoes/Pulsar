@@ -19,8 +19,6 @@ class Auth_Controller extends Base_Controller {
             'password' => Input::get('password'),
         );
 
-        $time = Auth_Controller::$cache_timeout;
-
         if(empty($credentials['username']) or empty($credentials['password'])){
 
             return Response::json(null, 412);
@@ -30,7 +28,7 @@ class Auth_Controller extends Base_Controller {
             if(Auth::attempt($credentials)) {
 
                 $token = Session::token();
-                Cache::put($token,$credentials['username'],$time);
+                Cache::put($token,$credentials['username'],self::$cache_timeout);
                 return Response::json(array('token' => $token,'username' => $credentials['username']),200);
 
             } else {
@@ -74,7 +72,7 @@ class Auth_Controller extends Base_Controller {
 
             if(!is_null($user)){
 
-                Cache::put($token, $user,1);
+                Cache::put($token, $user,self::$cache_timeout);
                 return Response::json(true,200);
 
             }

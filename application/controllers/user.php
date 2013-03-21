@@ -9,7 +9,7 @@
 class User_Controller extends Base_Controller {
 
 	public $restful = true;
-	private static $cache_timeout = 10;//isso ainda nao uso
+	private static $cache_timeout = 2;//isso ainda nao uso
 
 	public function get_user(){
 
@@ -47,7 +47,7 @@ class User_Controller extends Base_Controller {
                 } else {
 
                     $user = DB::table('users')->where($field, '=', Input::get($field))->get($fields_bd);
-                    Cache::put(Input::get($field),$user,1);
+                    Cache::put(Input::get($field),$user,self::$cache_timeout);
 
                 }
 
